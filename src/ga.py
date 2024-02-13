@@ -344,6 +344,7 @@ Individual = Individual_Grid
 
 
 def generate_successors(population):
+    print(population[0])
     results = []
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
