@@ -348,12 +348,16 @@ def generate_successors(population):
     sortedPopulation = sorted(population, key=lambda level: level._fitness, reverse=True)
     # Now we just need to take a subportion of available levels and create a sublist
     viableParents = []  # if i wanted to be more space efficient I would minimize the duplication of memory, but as it stands we are not creating a highly optimized program here
-    for index in range(int(len(sortedPopulation) / 10)):
+    for index in range(int(len(sortedPopulation) / 10)):    # making this dynamic so I don't have to go back and fix this for a different size population
         viableParents.append(sortedPopulation[index])
-    print(viableParents[0]._fitness)
-    print(viableParents[-1]._fitness)
     results = []
     # STUDENT Design and implement this
+    # For each parent, generate children and put into results
+    # The implementation of generate children will come another time
+    # lastParent = viableParents[-1]
+    for index in range(len(viableParents) - 1): # iterate until second to last
+        results.append(viableParents[index].generate_children(viableParents[index+1])[0])   # generate children from each parent using the next parent over
+    results.append(viableParents[-1].generate_children(viableParents[0])[0])    # generate children for the last parent by using the very first viable parent as the pairing
     # Hint: Call generate_children() on some individuals and fill up results.
     return results
 
