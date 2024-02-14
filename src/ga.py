@@ -342,9 +342,18 @@ class Individual_DE(object):
 
 Individual = Individual_Grid
 
+def return_fitness(object):
+    return object._fitness
 
 def generate_successors(population):
+    # print(type(population))
+    # print(type(population[0]))
+    # print(type(population[0].genome))
+    print(len(population))
+    sorted(population, key=return_fitness())
     print(population[0])
+    print(population(len(population)-1))
+    # print(population[0]._fitness)
     results = []
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
