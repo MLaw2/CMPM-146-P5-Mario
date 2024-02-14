@@ -348,16 +348,24 @@ def generate_successors(population):
     sortedPopulation = sorted(population, key=lambda level: level._fitness, reverse=True)
     # Now we just need to take a subportion of available levels and create a sublist
     viableParents = []  # if i wanted to be more space efficient I would minimize the duplication of memory, but as it stands we are not creating a highly optimized program here
-    for index in range(int(len(sortedPopulation) / 10)):    # making this dynamic so I don't have to go back and fix this for a different size population
+    for index in range(int(len(sortedPopulation) / 20)):    # making this dynamic so I don't have to go back and fix this for a different size population
+    # for index in range(len(sortedPopulation)):
         viableParents.append(sortedPopulation[index])
     results = []
+
+    # for each in sortedPopulation:
+        # print(each.fitness())
+    # print(len(viableParents))
+
     # STUDENT Design and implement this
-    # For each parent, generate children and put into results
-    # The implementation of generate children will come another time
+    # new strategy
+    # Grab a parent, and then generate children according to each parent in the upper fitness category
+    # move on to the next parent and do the same thing
     # lastParent = viableParents[-1]
-    for index in range(len(viableParents) - 1): # iterate until second to last
-        results.append(viableParents[index].generate_children(viableParents[index+1])[0])   # generate children from each parent using the next parent over
-    results.append(viableParents[-1].generate_children(viableParents[0])[0])    # generate children for the last parent by using the very first viable parent as the pairing
+    for firstParent in viableParents:
+        for secondParent in viableParents:
+            results.append(firstParent.generate_children(secondParent)[0])
+    print("sizeRESULTS: ", len(results))
     # Hint: Call generate_children() on some individuals and fill up results.
     return results
 
@@ -373,7 +381,8 @@ def ga():
     with mpool.Pool(processes=os.cpu_count()) as pool:
         init_time = time.time()
         # STUDENT (Optional) change population initialization
-        population = [Individual.random_individual() if random.random() < 0.9
+        # population = [Individual.random_individual() if random.random() < 0.9
+        population = [Individual.random_individual() if random.random() < 1
                       else Individual.empty_individual()
                       for _g in range(pop_limit)]
         # But leave this line alone; we have to reassign to population because we get a new population that has more cached stuff in it.
@@ -387,7 +396,8 @@ def ga():
         now = start
         print("Use ctrl-c to terminate this loop manually.")
         try:
-            while True:
+            # while True:
+            while generation <= 5:
                 now = time.time()
                 # Print out statistics
                 if generation > 0:
