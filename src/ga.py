@@ -84,9 +84,12 @@ class Individual_Grid(object):
         right = width - 1
         for y in range(height):
             for x in range(left, right):
+                # We're going with Uniform Crossover
+                if random.random() < 0.5:
+                    new_genome[y][x] = other.genome[y][x]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-                pass
+                # pass
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome),)
 
@@ -347,8 +350,9 @@ def generate_successors(population):
     # Sorts by fitness value and sorts from best to worst
     sortedPopulation = sorted(population, key=lambda level: level._fitness, reverse=True)
     # Now we just need to take a subportion of available levels and create a sublist
+    # Elitist Selection
     viableParents = []  # if i wanted to be more space efficient I would minimize the duplication of memory, but as it stands we are not creating a highly optimized program here
-    for index in range(int(len(sortedPopulation) / 20)):    # making this dynamic so I don't have to go back and fix this for a different size population
+    for index in range(int(len(sortedPopulation) / 21.5)):    # making this dynamic so I don't have to go back and fix this for a different size population
     # for index in range(len(sortedPopulation)):
         viableParents.append(sortedPopulation[index])
     results = []
@@ -396,8 +400,8 @@ def ga():
         now = start
         print("Use ctrl-c to terminate this loop manually.")
         try:
-            # while True:
-            while generation <= 5:
+            while True:
+            # while generation <= 5:
                 now = time.time()
                 # Print out statistics
                 if generation > 0:
