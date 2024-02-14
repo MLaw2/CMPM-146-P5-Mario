@@ -69,7 +69,7 @@ class Individual_Grid(object):
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
 
         left = 1
-        right = width - 1
+        right = width - 4
         for y in range(height):
             for x in range(left, right):
                 pass
@@ -81,11 +81,15 @@ class Individual_Grid(object):
         # Leaving first and last columns alone...
         # do crossover with other
         left = 1
-        right = width - 1
+        right = width - 4
+        empty = Individual.empty_individual()
         for y in range(height):
             for x in range(left, right):
                 # We're going with Uniform Crossover
-                if random.random() < 0.5:
+                temp = random.random()
+                if temp < 0.2:
+                    new_genome[y][x] = empty.genome[y][x]
+                elif temp < 0.6:
                     new_genome[y][x] = other.genome[y][x]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
@@ -116,11 +120,19 @@ class Individual_Grid(object):
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         g = [random.choices(options, k=width) for row in range(height)]
+        for row in g:
+            row[0] = "-"
+            row[width - 6] = "-"
+            row[width - 5] = "-"
+            row[width - 4] = "-"
+            row[width - 3] = "-"
+            row[width - 2] = "-"
+            row[width - 1] = "-"
         g[15][:] = ["X"] * width
         g[14][0] = "m"
-        g[7][-1] = "v"
-        g[8:14][-1] = ["f"] * 6
-        g[14:16][-1] = ["X", "X"]
+        g[7][width - 4] = "v"
+        for col in range(8, 15):
+            g[col][width - 4] = "f"
         return cls(g)
 
 
