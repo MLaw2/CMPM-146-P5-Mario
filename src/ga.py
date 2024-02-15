@@ -67,11 +67,14 @@ class Individual_Grid(object):
         # STUDENT implement a mutation operator, also consider not mutating this individual
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
+        # TODO implement some kind of mutate and put it into generate_children
 
         left = 1
-        right = width - 4
-        for y in range(height):
+        right = width - 6
+        for y in range(height, 14):
             for x in range(left, right):
+                if random.random() > 0.99:
+                    genome[y][x] = random.choice(options)
                 pass
         return genome
 
@@ -80,21 +83,30 @@ class Individual_Grid(object):
         new_genome = copy.deepcopy(self.genome)
         # Leaving first and last columns alone...
         # do crossover with other
+        # if self.fitness() > 0 and other.fitness() > 0:
+        #     fitnessDiff = self.fitness() - other.fitness()
+        # if self.fitness() < 0 and other.fitness() < 0:
+        #     fitnessDiff = abs(self.fitness()) - abs(other.fitness())
+        # elif self.fitness() < 0 and other.fitness() > 0:
+        #     fitnessDiff = - self.fitness() + other.fitness()
+        # elif self.fitness() > 0 and other.fitness() < 0:
+        #     fitnessDiff = self.fitness() - other.fitness()
+        # skew = 0.5  # greater than 0.5 is in favor of self, less than 0.5 is in favor of other
+        # skew += fitnessDiff * 10
         left = 1
-        right = width - 4
-        empty = Individual.empty_individual()
-        for y in range(height):
+        right = width - 6
+        for y in range(height, 14):
             for x in range(left, right):
                 # We're going with Uniform Crossover
+                # We are also going to prioritize the genome with better fitness
                 temp = random.random()
-                if temp < 0.2:
-                    new_genome[y][x] = empty.genome[y][x]
-                elif temp < 0.6:
+                # if temp < skew:
+                if temp < 0.5:
                     new_genome[y][x] = other.genome[y][x]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-                # pass
         # do mutation; note we're returning a one-element tuple here
+        new_genome = self.mutate(new_genome)
         return (Individual_Grid(new_genome),)
 
     # Turn the genome into a level string (easy for this genome)
@@ -109,10 +121,8 @@ class Individual_Grid(object):
         g[15][:] = ["X"] * width
         g[14][0] = "m"
         g[7][-1] = "v"
-        for col in range(8, 14):
-            g[col][-1] = "f"
-        for col in range(14, 16):
-            g[col][-1] = "X"
+        for col in range(8, 15):
+            g[col][width - 4] = "f"
         return cls(g)
 
     @classmethod
@@ -369,10 +379,6 @@ def generate_successors(population):
         viableParents.append(sortedPopulation[index])
     results = []
 
-    # for each in sortedPopulation:
-        # print(each.fitness())
-    # print(len(viableParents))
-
     # STUDENT Design and implement this
     # new strategy
     # Grab a parent, and then generate children according to each parent in the upper fitness category
@@ -397,8 +403,8 @@ def ga():
     with mpool.Pool(processes=os.cpu_count()) as pool:
         init_time = time.time()
         # STUDENT (Optional) change population initialization
-        # population = [Individual.random_individual() if random.random() < 0.9
-        population = [Individual.random_individual() if random.random() < 1
+        population = [Individual.random_individual() if random.random() < 0.99
+        # population = [Individual.random_individual() if random.random() < 1
                       else Individual.empty_individual()
                       for _g in range(pop_limit)]
         # But leave this line alone; we have to reassign to population because we get a new population that has more cached stuff in it.
