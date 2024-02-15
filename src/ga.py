@@ -71,9 +71,9 @@ class Individual_Grid(object):
 
         left = 1
         right = width - 6
-        for y in range(height, 14):
+        for y in range(0, height-1):
             for x in range(left, right):
-                if random.random() > 0.99:
+                if random.random() > 0.98:
                     genome[y][x] = random.choice(options)
                 pass
         return genome
@@ -83,16 +83,12 @@ class Individual_Grid(object):
         new_genome = copy.deepcopy(self.genome)
         # Leaving first and last columns alone...
         # do crossover with other
-        # if self.fitness() > 0 and other.fitness() > 0:
-        #     fitnessDiff = self.fitness() - other.fitness()
-        # if self.fitness() < 0 and other.fitness() < 0:
-        #     fitnessDiff = abs(self.fitness()) - abs(other.fitness())
-        # elif self.fitness() < 0 and other.fitness() > 0:
-        #     fitnessDiff = - self.fitness() + other.fitness()
-        # elif self.fitness() > 0 and other.fitness() < 0:
-        #     fitnessDiff = self.fitness() - other.fitness()
         # skew = 0.5  # greater than 0.5 is in favor of self, less than 0.5 is in favor of other
-        # skew += fitnessDiff * 10
+        # fitnessDiff = self.fitness() - other.fitness()
+        # if self.fitness() > other.fitness():
+        #     skew += fitnessDiff * 20
+        # else:
+        #     skew -= fitnessDiff * 20
         left = 1
         right = width - 6
         for y in range(height, 14):
@@ -120,7 +116,7 @@ class Individual_Grid(object):
         g = [["-" for col in range(width)] for row in range(height)]
         g[15][:] = ["X"] * width
         g[14][0] = "m"
-        g[7][-1] = "v"
+        g[7][width - 4] = "v"
         for col in range(8, 15):
             g[col][width - 4] = "f"
         return cls(g)
@@ -370,7 +366,7 @@ Individual = Individual_Grid
 
 def generate_successors(population):
     # Sorts by fitness value and sorts from best to worst
-    sortedPopulation = sorted(population, key=lambda level: level._fitness, reverse=True)
+    sortedPopulation = sorted(population, key=lambda level: level.fitness(), reverse=True)
     # Now we just need to take a subportion of available levels and create a sublist
     # Elitist Selection
     viableParents = []  # if i wanted to be more space efficient I would minimize the duplication of memory, but as it stands we are not creating a highly optimized program here
@@ -388,6 +384,9 @@ def generate_successors(population):
         for secondParent in viableParents:
             results.append(firstParent.generate_children(secondParent)[0])
     print("sizeRESULTS: ", len(results))
+    for index in range(int(len(viableParents) / 10)):
+        results.append(viableParents[index])
+    # results.append(viableParents[0])
     # Hint: Call generate_children() on some individuals and fill up results.
     return results
 
